@@ -1,0 +1,7 @@
+# Virtualenv
+bin
+Include
+Lib
+Scripts
+tcl
+pip-selfcheck.json
