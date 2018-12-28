@@ -76,5 +76,5 @@ class GUI:
         self.outbox.see(tkinter.END)
         self.outbox.configure(state='disabled')
 
-    def repeat_task(self, ms, func=None, *arg):
+    def delay_task(self, ms, func=None, *arg):
         self.window.after(ms, func, *arg)

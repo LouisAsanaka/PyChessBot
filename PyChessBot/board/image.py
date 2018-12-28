@@ -1,5 +1,4 @@
 from mss import mss
-import numpy as np
 
 
 class BoardImage:
@@ -14,4 +13,4 @@ class BoardImage:
         self.sct = mss()
 
     def snap(self):
-        return np.array(self.sct.grab(self.region))
+        return self.sct.grab(self.region)

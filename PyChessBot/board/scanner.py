@@ -1,12 +1,13 @@
 import time
 import pyautogui
 import ctypes
+from gui.gui import GUI
 
 
 class Scanner:
 
     def __init__(self, interface):
-        self.interface = interface
+        self.interface: GUI = interface
         self.first_pos = None
         self.second_pos = None
 
@@ -26,7 +27,7 @@ class Scanner:
     # Tell the user to setup two points, the top-left corner and bottom-right corner of the chess board
     def retrieve_coordinates(self, callback):
         if not self.interface.start:
-            self.interface.repeat_task(1, self.retrieve_coordinates)
+            self.interface.delay_task(1, self.retrieve_coordinates, callback)
             return
         pressed = self.button_state("left")
 
@@ -60,4 +61,4 @@ class Scanner:
 
                         callback(width, height, self.first_pos)
                         return
-        self.interface.repeat_task(1, self.retrieve_coordinates)
+        self.interface.delay_task(1, self.retrieve_coordinates, callback)

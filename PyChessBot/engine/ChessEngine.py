@@ -3,8 +3,8 @@ import chess.uci as uci
 
 class ChessEngine:
 
-    def __init__(self, config=None):
-        self.engine = None
+    def __init__(self, config: dict = None):
+        self.engine: uci.Engine = None
         if config is None:
             self.config = {
                 "nodes": 100000,
