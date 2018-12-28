@@ -24,6 +24,9 @@ class BoardAnalyzer:
         # Size by size area to check for pixel changes
         self.scan_region = np.empty((8, 8, self.scan_region_area, 2), dtype=int)
 
+        self.light_square_color = None
+        self.dark_square_color = None
+
         self.current_state: ScreenShot = self.image.snap()
         self.previous_state: ScreenShot = self.current_state
 
@@ -46,6 +49,47 @@ class BoardAnalyzer:
                     for y in range(center[1] - offset, center[1] + offset + 1):
                         self.scan_region[rank, file, index] = (x, y)
                         index += 1
+        # Get the RGB values of the light and dark squares
+        # 4, 0 and 4, 1 are arbitrary coordinates where we
+        # are guaranteed to not have any pieces in the way
+        self.light_square_color = self.current_state.pixel(*self.square_centers[4, 0])
+        self.dark_square_color = self.current_state.pixel(*self.square_centers[4, 1])
+
+    def detect_initial_changes(self):
+        self.current_state = self.image.snap()
+        board_x, board_y = self.board.get_coordinates()
+        for rank in range(2, 4):
+            for file in range(8):
+                coordinates = self.scan_region[rank, file]
+                region_changes = 0
+                for index in range(self.scan_region_area):
+                    x, y = coordinates[index]
+                    rgb = self.current_state.pixel(x - board_x, y - board_y)
+                    if rgb == self.light_square_color or rgb == self.dark_square_color:
+                        pass
+                    else:
+                        region_changes += 1
+                if region_changes >= self.scan_region_area // 3:
+                    square_name = chess.square_name(Chessboard.get_square(rank, file, self.board.color))
+                    if square_name in ("a3", "c3", "h3", "f3"):  # It might be a pawn move
+                        x, y = self.square_centers[rank - 1, file]
+                        rgb = self.current_state.pixel(x - board_x, y - board_y)
+                        if rgb != self.light_square_color and rgb != self.dark_square_color:
+                            # Knight move
+                            print("Knight move!")
+                            move = "N" + square_name
+                        else:
+                            # Pawn move
+                            print("Pawn move!")
+                            move = square_name  # Did this just to remind myself
+                    elif square_name in Chessboard.LEGAL_FIRST_MOVES:
+                        print("Simple pawn move")
+                        move = square_name  # Did this just to remind myself
+                    else:
+                        raise RuntimeError("Error: Move detected was not a legal move! Exiting...")
+
+                    uci_string = Chessboard.LEGAL_FIRST_MOVES_UCI[Chessboard.LEGAL_FIRST_MOVES.index(move)]
+                    return chess.Move.from_uci(uci_string)
 
     def detect_changes(self):
         self.current_state = self.image.snap()
@@ -55,13 +99,13 @@ class BoardAnalyzer:
             return None
 
         changed_squares = []
+        board_x, board_y = self.board.get_coordinates()
         for rank in range(8):
             for file in range(8):
                 coordinates = self.scan_region[rank, file]
                 region_changes = 0
                 for index in range(self.scan_region_area):
                     x, y = coordinates[index]
-                    board_x, board_y = self.board.get_coordinates()
                     if self.current_state.pixel(x - board_x, y - board_y) != self.previous_state.pixel(x - board_x, y - board_y):
                         region_changes += 1
                 if region_changes >= self.scan_region_area // 3:
@@ -82,7 +126,7 @@ class BoardAnalyzer:
             rook_index = None
             king_index = None
             for square in changed_squares:
-                square_id = self.board.get_square(*square)
+                square_id = self.board.get_square(*square, self.board.color)
                 piece_type = self.board.piece_type_at(square_id)
                 if piece_type == chess.ROOK:
                     rook_index = square_id
@@ -90,8 +134,8 @@ class BoardAnalyzer:
                     king_index = square_id
 
             assert rook_index is not None and king_index is not None
-            print("rook index = " + str(rook_index))
-            print("king index = " + str(king_index))
+            # print("rook index = " + str(rook_index))
+            # print("king index = " + str(king_index))
             assert king_index == 4 or king_index == 60
 
             distance = abs(king_index - rook_index)
@@ -118,11 +162,13 @@ class BoardAnalyzer:
             else:
                 target_square = changed_squares[0]
             return chess.Move.from_uci(
-                Chessboard.get_square_name(attacking_pawn) + Chessboard.get_square_name(target_square)
+                Chessboard.get_square_name(attacking_pawn, self.board.color) +
+                Chessboard.get_square_name(target_square, self.board.color)
             )
         elif changes == 2:  # Normal move
             sq1, sq2 = changed_squares
-            sq1, sq2 = chess.square_name(self.board.get_square(*sq1)), chess.square_name(self.board.get_square(*sq2))
+            sq1 = chess.square_name(Chessboard.get_square(*sq1, self.board.color))
+            sq2 = chess.square_name(Chessboard.get_square(*sq2, self.board.color))
             first_move = chess.Move.from_uci(sq1 + sq2)
             second_move = chess.Move.from_uci(sq2 + sq1)
 

@@ -20,8 +20,12 @@ class Bot:
 
         move_from, move_to, promotion = engine_move.from_square, engine_move.to_square, engine_move.promotion
 
-        start_x, start_y = self.square_centers[7 - chess.square_rank(move_from), chess.square_file(move_from)]
-        to_x, to_y = self.square_centers[7 - chess.square_rank(move_to), chess.square_file(move_to)]
+        start_x, start_y = self.square_centers[
+            Chessboard.get_true_rank(move_from, self.board.color), Chessboard.get_true_file(move_from, self.board.color)
+        ]
+        to_x, to_y = self.square_centers[
+            Chessboard.get_true_rank(move_to, self.board.color), Chessboard.get_true_file(move_to, self.board.color)
+        ]
 
         pyautogui.moveTo(start_x, start_y)
         pyautogui.dragTo(to_x, to_y, 0.5, button='left')

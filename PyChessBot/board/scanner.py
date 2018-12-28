@@ -26,7 +26,7 @@ class Scanner:
 
     # Tell the user to setup two points, the top-left corner and bottom-right corner of the chess board
     def retrieve_coordinates(self, callback):
-        if not self.interface.start:
+        if not self.interface.running:
             self.interface.delay_task(1, self.retrieve_coordinates, callback)
             return
         pressed = self.button_state("left")
