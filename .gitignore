@@ -6,3 +6,4 @@ Scripts
 tcl
 pip-selfcheck.json
 .idea
+__pycache__/
