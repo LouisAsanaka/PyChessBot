@@ -24,9 +24,9 @@ class Scanner:
             return ctypes.windll.user32.GetKeyState(0x02) > 1
 
     # Tell the user to setup two points, the top-left corner and bottom-right corner of the chess board
-    def capture_mouse(self):
+    def retrieve_coordinates(self, callback):
         if not self.interface.start:
-            self.interface.repeat_task(1, self.capture_mouse)
+            self.interface.repeat_task(1, self.retrieve_coordinates)
             return
         pressed = self.button_state("left")
 
@@ -57,5 +57,7 @@ class Scanner:
                         # TODO: Start playing!
                         self.interface.log("Width: " + str(width))
                         self.interface.log("Height: " + str(height))
+
+                        callback(width, height, self.first_pos)
                         return
-        self.interface.repeat_task(1, self.capture_mouse)
+        self.interface.repeat_task(1, self.retrieve_coordinates)

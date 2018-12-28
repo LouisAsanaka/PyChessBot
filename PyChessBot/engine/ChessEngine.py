@@ -1,27 +1,40 @@
-import chess, chess.uci
+import chess.uci as uci
+
 
 class ChessEngine:
 
-    def __init__(self, GUIWrapper):
+    def __init__(self, config=None):
         self.engine = None
-        self.GUIWrapper = GUIWrapper
+        if config is None:
+            self.config = {
+                "nodes": 100000,
+                "movetime": 2000,
+                "threads": 4
+            }
+        else:
+            self.config = config
+
+    def set_option(self, key, value):
+        self.config[key] = value
+
+    def get_option(self, key):
+        return self.config[key]
             
-    def startEngine(self):
-        if self.engine != None:
+    def start_engine(self):
+        if self.engine is not None:
             self.engine.quit()
-        self.engine = chess.uci.popen_engine("..\\bin\\stockfish_10_x64.exe")
+        self.engine = uci.popen_engine("..\\bin\\stockfish_10_x64.exe")
         self.engine.setoption({
-            'Threads': 8
+            'Threads': self.get_option("threads")
         })
         self.engine.uci()
         self.engine.ucinewgame()
         print(self.engine.name)
         
-    def evaluatePosition(self, position):
-        if self.engine == None:
-            self.startEngine()
+    def evaluate(self, position):
+        if self.engine is None:
+            self.start_engine()
         self.engine.position(position)
         
-        engineMove = self.engine.go(nodes = self.GUIWrapper.nodeCount.get(), movetime = self.GUIWrapper.timeSlider.get())[0]
-        
-        return engineMove
+        engine_move = self.engine.go(nodes=self.get_option("nodes"), movetime=self.get_option("movetime"))[0]
+        return engine_move
