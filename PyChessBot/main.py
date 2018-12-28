@@ -30,8 +30,10 @@ class Main:
         self.board = Chessboard(width, height, top_left)
         self.analyzer = BoardAnalyzer(self.board, self.interface)
         self.bot = Bot(self.board, self.analyzer.square_centers)
+
         self.bot.play_move()
         self.analyzer.set_previous_state()
+
         self.loop()
 
     def loop(self):

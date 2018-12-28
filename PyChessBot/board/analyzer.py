@@ -73,13 +73,10 @@ class BoardAnalyzer:
             return None
         return changed_squares
 
-    def analyze_changes(self, changed_squares):
+    def analyze_changes(self, changed_squares: list):
         if changed_squares is None:
             return None
         changes = len(changed_squares)
-
-        for square in changed_squares:
-            print(chess.square_name(self.board.get_square(*square)))
 
         if changes == 4:  # Castling
             rook_index = None
@@ -107,7 +104,22 @@ class BoardAnalyzer:
             move = chess.Move.from_uci(chess.square_name(king_index) + chess.square_name(target_index))
             return move
         elif changes == 3:  # En passant
-            pass
+            if chess.square_file(changed_squares[0]) == chess.square_file(changed_squares[1]):
+                attacking_pawn = changed_squares[2]
+            elif chess.square_file(changed_squares[1]) == chess.square_file(changed_squares[2]):
+                attacking_pawn = changed_squares[0]
+            else:
+                attacking_pawn = changed_squares[1]
+            changed_squares.remove(attacking_pawn)
+
+            attacking_pawn_rank = chess.square_rank(attacking_pawn)
+            if attacking_pawn_rank == chess.square_rank(changed_squares[0]):
+                target_square = changed_squares[1]
+            else:
+                target_square = changed_squares[0]
+            return chess.Move.from_uci(
+                Chessboard.get_square_name(attacking_pawn) + Chessboard.get_square_name(target_square)
+            )
         elif changes == 2:  # Normal move
             sq1, sq2 = changed_squares
             sq1, sq2 = chess.square_name(self.board.get_square(*sq1)), chess.square_name(self.board.get_square(*sq2))

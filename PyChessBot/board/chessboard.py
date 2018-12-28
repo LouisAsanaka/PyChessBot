@@ -49,5 +49,9 @@ class Chessboard:
     def get_square(rank, file):
         return chess.square_mirror(chess.square(file, rank))
 
+    @staticmethod
+    def get_square_name(square):
+        return chess.square_name(chess.square_mirror(square))
+
     def play_move(self, move):
         self.internal_board.push(move)

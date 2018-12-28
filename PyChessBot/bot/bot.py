@@ -46,7 +46,7 @@ class Bot:
                     time.sleep(0.5)
                     pyautogui.click()
                 else:
-                    pyautogui.moveRel(0, -relative_distance)
+                    pyautogui.moveRel(yOffset=relative_distance, duration=0.5)
                     pyautogui.click()
         except NameError:
             pass
