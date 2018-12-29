@@ -7,3 +7,4 @@ tcl
 pip-selfcheck.json
 .idea
 __pycache__/
+board_pos.dat
