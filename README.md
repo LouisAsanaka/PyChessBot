@@ -7,17 +7,20 @@ PyChessBot is a chess bot written in Python.
 
 Installing
 ----------
+- Clone the repository or [download the zip file from GitHub](https://github.com/LouisAsanaka/PyChessBot/archive/master.zip)
+- Install dependencies:
 
-Clone the repository or [download the zip file from GitHub](https://github.com/LouisAsanaka/PyChessBot/archive/master.zip)
+        pip install -r requirements.txt
 
-Install dependencies:
+- Download a chess engine of your choice | [Stockfish 10](https://stockfishchess.org/files/stockfish-10-win.zip)
+- Extract the zip, and create a folder called "bin" in the root program folder
+- Rename the engine executable to "engine.exe"
+- Place the renamed executable in the "bin" folder
 
-    pip install -r requirements.txt
-    
-Run program:
+- Run the program:
 
-    cd PyChessBot
-    python main.py
+        cd PyChessBot
+        python main.py
     
 Usage
 -----
@@ -28,8 +31,14 @@ Long click the top-left corner until indicated in the log window,
 then repeat for the bottom-right corner.
 - The bot will start playing _immediately_ after selection
 - Hold the **CTRL** key to pause the bot (Not implemented yet)
-- Do **NOT** move the mouse while the bot is playing, or move any window
-over the board.
+
+Notes
+-----
+
+- Do **NOT** move the mouse while the bot is playing, or move any window over the board.
+- Make the colors of the board different from the colors of the pieces
+- If you can, turn **off** piece animations
+
 
 Citation
 --------

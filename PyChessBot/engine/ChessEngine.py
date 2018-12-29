@@ -23,7 +23,7 @@ class ChessEngine:
     def start_engine(self):
         if self.engine is not None:
             self.engine.quit()
-        self.engine = uci.popen_engine("..\\bin\\stockfish_10_x64.exe")
+        self.engine = uci.popen_engine("../bin/engine.exe")
         self.engine.setoption({
             'Threads': self.get_option("threads")
         })

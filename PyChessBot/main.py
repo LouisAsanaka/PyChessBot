@@ -4,6 +4,8 @@ from board.chessboard import Chessboard
 from board.scanner import Scanner
 from board.analyzer import BoardAnalyzer
 import chess
+import sys
+import os
 
 TASK_REPEAT_INTERVAL = 100
 
@@ -11,6 +13,12 @@ TASK_REPEAT_INTERVAL = 100
 class Main:
 
     def __init__(self):
+        if not os.path.isdir("../bin"):
+            os.mkdir("../bin")
+        if not os.path.isfile("../bin/engine.exe"):
+            print("Engine not found!")
+            sys.exit()
+
         self.board: Chessboard = None
         self.analyzer: BoardAnalyzer = None
         self.bot: Bot = None
