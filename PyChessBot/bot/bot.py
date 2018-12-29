@@ -35,7 +35,7 @@ class Bot:
 
     def attempt_promotion(self, promotion):
         try:
-            # This is purely for chess.com
+            # This is purely for chess.com and lichess.org
             # Promotion list: Queen Knight Rook Bishop
             promotion_list = [
                 chess.QUEEN,
@@ -52,6 +52,7 @@ class Bot:
                 else:
                     pyautogui.moveRel(yOffset=relative_distance, duration=0.5)
                     pyautogui.click()
+                time.sleep(0.5)
         except NameError:
             pass
 

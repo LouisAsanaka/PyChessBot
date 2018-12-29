@@ -24,6 +24,8 @@ class BoardAnalyzer:
         # Size by size area to check for pixel changes
         self.scan_region = np.empty((8, 8, self.scan_region_area, 2), dtype=int)
 
+        self.board_x, self.board_y = self.board.get_coordinates()
+
         self.light_square_color = None
         self.dark_square_color = None
 
@@ -52,19 +54,20 @@ class BoardAnalyzer:
         # Get the RGB values of the light and dark squares
         # 4, 0 and 4, 1 are arbitrary coordinates where we
         # are guaranteed to not have any pieces in the way
-        self.light_square_color = self.current_state.pixel(*self.square_centers[4, 0])
-        self.dark_square_color = self.current_state.pixel(*self.square_centers[4, 1])
+        light_sq_x, light_sq_y = self.square_centers[4, 0]
+        self.light_square_color = self.current_state.pixel(light_sq_x - self.board_x, light_sq_y - self.board_y)
+        dark_sq_x, dark_sq_y = self.square_centers[4, 1]
+        self.dark_square_color = self.current_state.pixel(dark_sq_x - self.board_x, dark_sq_y - self.board_y)
 
     def detect_initial_changes(self):
         self.current_state = self.image.snap()
-        board_x, board_y = self.board.get_coordinates()
         for rank in range(2, 4):
             for file in range(8):
                 coordinates = self.scan_region[rank, file]
                 region_changes = 0
                 for index in range(self.scan_region_area):
                     x, y = coordinates[index]
-                    rgb = self.current_state.pixel(x - board_x, y - board_y)
+                    rgb = self.current_state.pixel(x - self.board_x, y - self.board_y)
                     if rgb == self.light_square_color or rgb == self.dark_square_color:
                         pass
                     else:
@@ -73,7 +76,7 @@ class BoardAnalyzer:
                     square_name = chess.square_name(Chessboard.get_square(rank, file, self.board.color))
                     if square_name in ("a3", "c3", "h3", "f3"):  # It might be a pawn move
                         x, y = self.square_centers[rank - 1, file]
-                        rgb = self.current_state.pixel(x - board_x, y - board_y)
+                        rgb = self.current_state.pixel(x - self.board_x, y - self.board_y)
                         if rgb != self.light_square_color and rgb != self.dark_square_color:
                             # Knight move
                             print("Knight move!")
@@ -99,14 +102,14 @@ class BoardAnalyzer:
             return None
 
         changed_squares = []
-        board_x, board_y = self.board.get_coordinates()
         for rank in range(8):
             for file in range(8):
                 coordinates = self.scan_region[rank, file]
                 region_changes = 0
                 for index in range(self.scan_region_area):
                     x, y = coordinates[index]
-                    if self.current_state.pixel(x - board_x, y - board_y) != self.previous_state.pixel(x - board_x, y - board_y):
+                    if self.current_state.pixel(x - self.board_x, y - self.board_y) != \
+                            self.previous_state.pixel(x - self.board_x, y - self.board_y):
                         region_changes += 1
                 if region_changes >= self.scan_region_area // 3:
                     self.interface.log("CHANGED")
@@ -176,6 +179,7 @@ class BoardAnalyzer:
                 move = chess.Move.from_uci(move_uci)
                 if move in legal_moves:
                     return move
+            print(possible_moves)
             raise RuntimeError("Unknown error")
         else:
             self.interface.log("Invalid changes!")
