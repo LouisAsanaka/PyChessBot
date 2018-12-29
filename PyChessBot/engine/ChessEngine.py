@@ -30,6 +30,9 @@ class ChessEngine:
         self.engine.uci()
         self.engine.ucinewgame()
         print(self.engine.name)
+
+    def stop_engine(self):
+        self.engine.quit()
         
     def evaluate(self, position):
         if self.engine is None:

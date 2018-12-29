@@ -10,6 +10,7 @@ class GUI:
         self.outbox = None
 
         self.custom_font = None
+        self.text_bg_color = "#a1dbcd"
 
         self.time_slider = None
         self.node_count_slider = None
@@ -39,7 +40,10 @@ class GUI:
     def create_window(self):
         # Initialize the Tkinter window
         self.window = tkinter.Tk()
-        self.custom_font = font.Font(family="Consolas", size=10)
+        self.window.config(background=self.text_bg_color)
+        self.window.title("PyChessBot")
+        self.window.iconbitmap("../data/favicon.ico")
+        self.custom_font = font.Font(family="Segoe UI Semibold", size=10)
 
         # Make the window always on top
         self.window.wm_attributes("-topmost", True)
@@ -47,7 +51,7 @@ class GUI:
 
         # The width and the height of the Tkinter window
         width = 300
-        height = 500
+        height = 550
 
         # Get screen width and height
         ws = self.window.winfo_screenwidth()  # width of the screen
@@ -62,23 +66,25 @@ class GUI:
         self.window.geometry('%dx%d+%d+%d' % (width, height, x, y))
 
         # Add the textbox widget
-        self.outbox = tkinter.Text(self.window, state='disabled', height=10, width=30,
+        self.outbox = tkinter.Text(self.window, state='disabled', height=8, width=30,
                                    bg='#d3d3d3', font=self.custom_font)
-        self.outbox.pack()
+        self.outbox.pack(pady=10)
 
         self.time_slider = tkinter.Scale(
             self.window, label="Thinking Time (ms)", from_=500, to=10000, resolution=500,
-            orient=tkinter.HORIZONTAL, length=250, font=self.custom_font
+            orient=tkinter.HORIZONTAL, length=250, font=self.custom_font, bg=self.text_bg_color,
+            highlightthickness=0
         )
         self.time_slider.set(2000)
-        self.time_slider.pack()
+        self.time_slider.pack(pady=2)
 
         self.node_count_slider = tkinter.Scale(
             self.window, label="# of Nodes", from_=100000, to=1000000, resolution=10000,
-            orient=tkinter.HORIZONTAL, length=250, font=self.custom_font
+            orient=tkinter.HORIZONTAL, length=250, font=self.custom_font, bg=self.text_bg_color,
+            highlightthickness=0
         )
         self.node_count_slider.set(100000)
-        self.node_count_slider.pack()
+        self.node_count_slider.pack(pady=10)
 
         frame = tkinter.Frame(self.window, height=150, width=200)
         frame.pack_propagate(0)  # don't shrink

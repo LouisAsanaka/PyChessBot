@@ -54,3 +54,7 @@ class Bot:
                     pyautogui.click()
         except NameError:
             pass
+
+    def terminate(self):
+        self.engine.stop_engine()
+        print("Stopping...")

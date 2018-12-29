@@ -40,6 +40,7 @@ class Main:
             self.loop()
         else:
             self.loop_initial_check()
+        self.bot.terminate()
 
     def loop(self):
         if not self.interface.running:
