@@ -38,6 +38,7 @@ Notes
 - Do **NOT** move the mouse while the bot is playing, or move any window over the board.
 - Make the colors of the board different from the colors of the pieces
 - If you can, turn **off** piece animations
+- The sliders currently don't work yet
 
 
 Citation
