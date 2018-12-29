@@ -17,6 +17,7 @@ class Main:
             os.mkdir("../bin")
         if not os.path.isfile("../bin/engine.exe"):
             print("Engine not found!")
+            print("Place engine.exe in " + os.path.join(os.path.dirname(os.path.abspath(".")), "bin"))
             sys.exit()
 
         self.board: Chessboard = None
