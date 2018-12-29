@@ -1,4 +1,4 @@
-![](https://i.imgur.com/rsUIlVr.png?1)
+![](https://i.imgur.com/rsUIlVrs.png?1)
 
 # PyChessBot
 
