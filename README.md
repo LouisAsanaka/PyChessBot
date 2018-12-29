@@ -30,10 +30,10 @@ Usage
 -----
 
 - Toggle between play as white and play as black mode
-- Click on start to select the boundaries of the board on the screen
-Long click the top-left corner until indicated in the log window,
-then repeat for the bottom-right corner.
-- The bot will start playing _immediately_ after selection
+- Select the boundaries of the board on the screen by long clicking
+the top-left corner until indicated by the message box, and repeat for 
+the bottom-right corner.
+- The bot will start playing after the start button is pressed
 - Hold the **CTRL** key to pause the bot (Not implemented yet)
 
 Notes

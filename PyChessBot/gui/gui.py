@@ -1,11 +1,15 @@
 import chess
 import tkinter
 import tkinter.font as font
+import os
+import numpy as np
+
+DEBUG = True
 
 
 class GUI:
 
-    def __init__(self, color_callback):
+    def __init__(self, color_callback, set_coordinates_callback):
         self.window = None
         self.outbox = None
 
@@ -22,20 +26,48 @@ class GUI:
         self.color_button = None
         self.color_callback = color_callback
 
+        self.loaded = False
+        self.load_button = None
+        self.set_coordinates_callback = set_coordinates_callback
+
     def toggle_running(self):
         self.running = not self.running
         if self.running:
+            self.log("Starting...")
             self.start_button.config(text="Pause", background="red")
         else:
+            self.log("Pausing...")
             self.start_button.config(text="Start", background="green")
 
     def toggle_color(self):
         self.color_callback()
         self.color = not self.color
         if self.color:
+            self.log("Playing as WHITE")
             self.color_button.config(text="Play as BLACK", background="red")
         else:
+            self.log("Playing as BLACK")
             self.color_button.config(text="Play as WHITE", background="green")
+
+    def load_board_pos(self):
+        if self.loaded:
+            self.log("Cannot load position again.")
+            return
+        if not os.path.isfile("../board_pos.dat"):
+            self.log("No position saved!")
+        else:
+            data = np.genfromtxt(r"../board_pos.dat", delimiter=",", dtype=int)
+            if len(data) != 2:
+                self.log("Corrupt position file.", level="error")
+            else:
+                (x, y), (width, height) = data
+
+                self.log("Width: " + str(width), level="debug")
+                self.log("Height: " + str(height), level="debug")
+
+                self.log("Loaded board position.")
+                self.loaded = True
+                self.set_coordinates_callback(int(width), int(height), (int(x), int(y)))
 
     def create_window(self):
         # Initialize the Tkinter window
@@ -98,12 +130,25 @@ class GUI:
                                            command=self.toggle_color, font=self.custom_font)
         self.color_button.pack(fill=tkinter.BOTH, expand=1)
 
+        self.load_button = tkinter.Button(frame, text="Load board position", background='orange',
+                                          command=self.load_board_pos, font=self.custom_font)
+        self.load_button.pack(fill=tkinter.BOTH, expand=1)
+
     # Log a message in the outbox
-    def log(self, message):
+    def log(self, message, level="normal"):
         self.outbox.configure(state='normal')
+        if level == "normal":
+            message = "" + message
+        elif level == "debug" and DEBUG:
+            message = "> " + message
+        elif level == "error":
+            message = "ERROR " + message
         self.outbox.insert(tkinter.END, message + "\n")  # Add the text to the textbox widget
         self.outbox.see(tkinter.END)
         self.outbox.configure(state='disabled')
+
+    def cancel_task(self, task_id):
+        self.window.after_cancel(task_id)
 
     def delay_task(self, ms, func=None, *arg):
         return self.window.after(ms, func, *arg)

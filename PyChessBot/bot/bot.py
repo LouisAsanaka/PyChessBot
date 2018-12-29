@@ -58,4 +58,3 @@ class Bot:
 
     def terminate(self):
         self.engine.stop_engine()
-        print("Stopping...")

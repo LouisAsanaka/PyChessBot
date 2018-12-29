@@ -17,6 +17,8 @@ class Scanner:
         # The epoch timestamp when the left mouse button was clicked
         self.last_click = None
 
+        self.task_id = -1
+
     @staticmethod
     def button_state(side):
         if side == "left":
@@ -26,9 +28,6 @@ class Scanner:
 
     # Tell the user to setup two points, the top-left corner and bottom-right corner of the chess board
     def retrieve_coordinates(self, callback):
-        if not self.interface.running:
-            self.interface.delay_task(1, self.retrieve_coordinates, callback)
-            return
         pressed = self.button_state("left")
 
         if pressed is not self.state_left:  # Button state changed
@@ -55,10 +54,14 @@ class Scanner:
                         width = self.second_pos[0] - self.first_pos[0]
                         height = self.second_pos[1] - self.first_pos[1]
 
-                        # TODO: Start playing!
-                        self.interface.log("Width: " + str(width))
-                        self.interface.log("Height: " + str(height))
+                        with open("../board_pos.dat", "w") as file:
+                            file.write(str(self.first_pos[0]) + "," + str(self.first_pos[1]) + "\n")
+                            file.write(str(width) + "," + str(height))
 
+                        self.interface.log("Width: " + str(width), level="debug")
+                        self.interface.log("Height: " + str(height), level="debug")
+
+                        self.task_id = -1
                         callback(width, height, self.first_pos)
                         return
-        self.interface.delay_task(1, self.retrieve_coordinates, callback)
+        self.task_id = self.interface.delay_task(10, self.retrieve_coordinates, callback)

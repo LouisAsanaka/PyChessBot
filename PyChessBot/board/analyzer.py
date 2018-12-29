@@ -32,6 +32,9 @@ class BoardAnalyzer:
         self.current_state: ScreenShot = self.image.snap()
         self.previous_state: ScreenShot = self.current_state
 
+        self.is_animating = False
+        self.animating_state: ScreenShot = None
+
         self.initialize_data()
 
     def set_previous_state(self, snap=None):
@@ -39,6 +42,12 @@ class BoardAnalyzer:
             self.previous_state = self.image.snap()
         else:
             self.previous_state = snap
+
+    def set_animating_state(self, snap=None):
+        if snap is None:
+            self.animating_state = self.image.snap()
+        else:
+            self.animating_state = snap
 
     def initialize_data(self):
         for rank in range(8):
@@ -73,32 +82,52 @@ class BoardAnalyzer:
                     else:
                         region_changes += 1
                 if region_changes >= self.scan_region_area // 3:
+                    if self.is_animating:
+                        if self.current_state.pixels == self.animating_state.pixels:
+                            self.is_animating = False
+                            self.set_animating_state(None)
+                        else:
+                            self.set_animating_state(self.current_state)
+                            return None
+                    else:
+                        self.is_animating = True
+                        self.set_animating_state(self.current_state)
+                        return None
+
                     square_name = chess.square_name(Chessboard.get_square(rank, file, self.board.color))
                     if square_name in ("a3", "c3", "h3", "f3"):  # It might be a pawn move
                         x, y = self.square_centers[rank - 1, file]
                         rgb = self.current_state.pixel(x - self.board_x, y - self.board_y)
                         if rgb != self.light_square_color and rgb != self.dark_square_color:
                             # Knight move
-                            print("Knight move!")
                             move = "N" + square_name
                         else:
                             # Pawn move
-                            print("Pawn move!")
                             move = square_name  # Did this just to remind myself
                     elif square_name in Chessboard.LEGAL_FIRST_MOVES:
-                        print("Simple pawn move")
                         move = square_name  # Did this just to remind myself
                     else:
-                        raise RuntimeError("Error: Move detected was not a legal move! Exiting...")
+                        self.interface.log("Move detected was not a legal move.", level="error")
+                        raise RuntimeError("Error: Move detected was not a legal move.")
 
                     uci_string = Chessboard.LEGAL_FIRST_MOVES_UCI[Chessboard.LEGAL_FIRST_MOVES.index(move)]
                     return chess.Move.from_uci(uci_string)
 
     def detect_changes(self):
         self.current_state = self.image.snap()
-        if self.current_state.pixels == self.previous_state.pixels:
-            self.interface.log("No changes")
-            self.set_previous_state(self.current_state)
+        if self.is_animating:
+            if self.current_state.pixels == self.animating_state.pixels:
+                self.is_animating = False
+                self.set_animating_state(None)
+            else:
+                self.set_animating_state(self.current_state)
+                return None
+        else:
+            if self.current_state.pixels == self.previous_state.pixels:
+                self.set_previous_state(self.current_state)
+                return None
+            self.is_animating = True
+            self.set_animating_state(self.current_state)
             return None
 
         changed_squares = []
@@ -112,11 +141,9 @@ class BoardAnalyzer:
                             self.previous_state.pixel(x - self.board_x, y - self.board_y):
                         region_changes += 1
                 if region_changes >= self.scan_region_area // 3:
-                    self.interface.log("CHANGED")
                     changed_squares.append((rank, file))
-        self.set_previous_state(self.current_state)
+        self.set_previous_state(self.image.snap())
         if not changed_squares:
-            self.interface.log("No changes")
             return None
         return changed_squares
 
@@ -137,8 +164,6 @@ class BoardAnalyzer:
                     king_index = square_id
 
             assert rook_index is not None and king_index is not None
-            # print("rook index = " + str(rook_index))
-            # print("king index = " + str(king_index))
             assert king_index == 4 or king_index == 60
 
             distance = abs(king_index - rook_index)
@@ -147,7 +172,8 @@ class BoardAnalyzer:
             elif distance == 4:
                 target_index = king_index - 2
             else:
-                raise RuntimeError("Castling calculation error")
+                self.interface.log("Castling calculation error", level="error")
+                raise RuntimeError("Castling calculation error.")
             move = chess.Move.from_uci(chess.square_name(king_index) + chess.square_name(target_index))
             return move
         elif changes == 3:  # En passant
@@ -179,7 +205,8 @@ class BoardAnalyzer:
                 move = chess.Move.from_uci(move_uci)
                 if move in legal_moves:
                     return move
-            print(possible_moves)
-            raise RuntimeError("Unknown error")
+            self.interface.log("Unknown error occurred.", level="error")
+            raise RuntimeError("Unknown error occurred.")
         else:
-            self.interface.log("Invalid changes!")
+            self.interface.log("Invalid changes.", level="error")
+            raise RuntimeError("Invalid changes.")
