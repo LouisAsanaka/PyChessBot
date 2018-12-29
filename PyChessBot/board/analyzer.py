@@ -169,15 +169,13 @@ class BoardAnalyzer:
             sq1, sq2 = changed_squares
             sq1 = chess.square_name(Chessboard.get_square(*sq1, self.board.color))
             sq2 = chess.square_name(Chessboard.get_square(*sq2, self.board.color))
-            first_move = chess.Move.from_uci(sq1 + sq2)
-            second_move = chess.Move.from_uci(sq2 + sq1)
+            possible_moves = (sq1 + sq2, sq2 + sq1, sq1 + sq2 + "q", sq2 + sq1 + "q")
 
             legal_moves = self.board.get_legal_moves()
-            if first_move in legal_moves:
-                return first_move
-            elif second_move in legal_moves:
-                return second_move
-            else:
-                raise RuntimeError("Unknown error")
+            for move_uci in possible_moves:
+                move = chess.Move.from_uci(move_uci)
+                if move in legal_moves:
+                    return move
+            raise RuntimeError("Unknown error")
         else:
             self.interface.log("Invalid changes!")

@@ -5,6 +5,10 @@
 
 PyChessBot is a chess bot written in Python. 
 
+Disclaimer
+----------
+- I do **NOT** endorse any sort of cheating. This program should be used for educational purposes only, or against offline bots.
+
 Installing
 ----------
 - Clone the repository or [download the zip file from GitHub](https://github.com/LouisAsanaka/PyChessBot/archive/master.zip)
@@ -39,6 +43,8 @@ Notes
 - Make the colors of the board different from the colors of the pieces
 - If you can, turn **off** piece animations
 - The sliders currently don't work yet
+- The bot assumes that the opponent always promotes to a queen, so it **WILL** malfunction if they promote to something else
+- The bot can promote to other pieces, but only on chess.com
 
 
 Citation

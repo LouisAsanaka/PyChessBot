@@ -49,7 +49,6 @@ class Main:
             self.loop()
         else:
             self.loop_initial_check()
-        self.bot.terminate()
 
     def loop(self):
         if not self.interface.running:
@@ -57,6 +56,7 @@ class Main:
             return
         if self.board.is_game_over():
             self.interface.log("Game over!")
+            self.bot.terminate()
             return
         move = self.analyzer.analyze_changes(self.analyzer.detect_changes())
         if move is None:
