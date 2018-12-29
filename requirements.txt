@@ -1,0 +1,8 @@
+mss==3.3.2
+numpy==1.15.4
+Pillow==5.3.0
+PyAutoGUI==0.9.39
+PyMsgBox==1.0.6
+PyScreeze==0.1.18
+python-chess==0.24.1
+PyTweening==1.0.3
