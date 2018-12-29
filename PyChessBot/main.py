@@ -38,6 +38,7 @@ class Main:
         self.interface.window.mainloop()
 
     def set_coordinates(self, width, height, top_left):
+        self.interface.loaded = True  # Funky hack
         if self.scanner.task_id != -1:
             self.interface.cancel_task(self.scanner.task_id)
         self.scanner = None

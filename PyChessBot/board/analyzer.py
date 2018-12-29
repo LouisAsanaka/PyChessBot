@@ -142,7 +142,7 @@ class BoardAnalyzer:
                         region_changes += 1
                 if region_changes >= self.scan_region_area // 3:
                     changed_squares.append((rank, file))
-        self.set_previous_state(self.image.snap())
+        self.set_previous_state(self.current_state)
         if not changed_squares:
             return None
         return changed_squares
