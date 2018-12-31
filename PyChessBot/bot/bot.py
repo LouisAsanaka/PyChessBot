@@ -1,6 +1,7 @@
 import chess
 import pyautogui
 import time
+import random
 from board.chessboard import Chessboard
 from engine.chessengine import ChessEngine
 
@@ -28,7 +29,10 @@ class Bot:
         ]
 
         pyautogui.moveTo(start_x, start_y)
-        pyautogui.dragTo(to_x, to_y, 0.4, button='left')
+
+        # drag_time = round(random.uniform(0.4, 1.2), 1)
+        drag_time = 0.4
+        pyautogui.dragTo(to_x, to_y, drag_time, button='left')
 
         if promotion is not None:
             self.attempt_promotion(promotion)
