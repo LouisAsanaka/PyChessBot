@@ -7,10 +7,10 @@ from engine.chessengine import ChessEngine
 
 class Bot:
 
-    def __init__(self, board, square_centers):
+    def __init__(self, binary_dir, board, square_centers):
         pyautogui.PAUSE = 0.1
 
-        self.engine: ChessEngine = ChessEngine()
+        self.engine: ChessEngine = ChessEngine(binary_dir)
         self.board: Chessboard = board
         self.square_centers = square_centers
 
@@ -28,7 +28,7 @@ class Bot:
         ]
 
         pyautogui.moveTo(start_x, start_y)
-        pyautogui.dragTo(to_x, to_y, 0.5, button='left')
+        pyautogui.dragTo(to_x, to_y, 0.4, button='left')
 
         if promotion is not None:
             self.attempt_promotion(promotion)
@@ -52,7 +52,7 @@ class Bot:
                 else:
                     pyautogui.moveRel(yOffset=relative_distance, duration=0.5)
                     pyautogui.click()
-                time.sleep(0.5)
+                time.sleep(0.1)
         except NameError:
             pass
 

@@ -3,7 +3,7 @@
 
 # PyChessBot
 
-PyChessBot is a chess bot written in Python. 
+PyChessBot is a chess bot written in Python for **Windows** only.
 
 Disclaimer
 ----------
@@ -25,6 +25,8 @@ Installing
 
         cd PyChessBot
         python main.py
+        
+  Or alternatively double click start.bat
     
 Usage
 -----
@@ -34,7 +36,7 @@ Usage
 the top-left corner until indicated by the message box, and repeat for 
 the bottom-right corner.
 - The bot will start playing after the start button is pressed
-- Hold the **CTRL** key to pause the bot (Not implemented yet)
+- Click on the **CTRL** key to pause the bot
 
 Notes
 -----
@@ -44,7 +46,7 @@ Notes
 - If you can, turn **off** piece animations
 - The sliders currently don't work yet
 - The bot assumes that the opponent always promotes to a queen, so it **WILL** malfunction if they promote to something else
-- The bot can promote to other pieces, but only on chess.com
+- The bot can promote to other pieces, but only on chess.com and lichess.org
 
 
 Citation

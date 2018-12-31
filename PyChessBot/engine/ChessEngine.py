@@ -1,9 +1,11 @@
+import os
 import chess.uci as uci
 
 
 class ChessEngine:
 
-    def __init__(self, config: dict = None):
+    def __init__(self, binary_dir, config: dict = None):
+        self.binary_dir = binary_dir
         self.engine: uci.Engine = None
         if config is None:
             self.config = {
@@ -23,7 +25,7 @@ class ChessEngine:
     def start_engine(self):
         if self.engine is not None:
             self.engine.quit()
-        self.engine = uci.popen_engine("../bin/engine.exe")
+        self.engine = uci.popen_engine(os.path.join(self.binary_dir, "engine.exe"))
         self.engine.setoption({
             'Threads': self.get_option("threads")
         })

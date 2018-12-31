@@ -3,13 +3,17 @@ import tkinter
 import tkinter.font as font
 import os
 import numpy as np
+import ctypes
 
-DEBUG = True
+DEBUG = False
+VK_CONTROL = 0x11
 
 
 class GUI:
 
-    def __init__(self, color_callback, set_coordinates_callback):
+    def __init__(self, parent_dir, color_callback, set_coordinates_callback):
+        self.parent_dir = parent_dir
+
         self.window = None
         self.outbox = None
 
@@ -19,6 +23,7 @@ class GUI:
         self.time_slider = None
         self.node_count_slider = None
 
+        self.just_let_go = False
         self.running = False
         self.start_button = None
 
@@ -53,10 +58,11 @@ class GUI:
         if self.loaded:
             self.log("Cannot load position again.")
             return
-        if not os.path.isfile("../board_pos.dat"):
+        board_pos_dir = os.path.join(self.parent_dir, "board_pos.dat")
+        if not os.path.isfile(board_pos_dir):
             self.log("No position saved!")
         else:
-            data = np.genfromtxt(r"../board_pos.dat", delimiter=",", dtype=int)
+            data = np.genfromtxt(board_pos_dir, delimiter=",", dtype=int)
             if len(data) != 2:
                 self.log("Corrupt position file.", level="error")
             else:
@@ -74,7 +80,7 @@ class GUI:
         self.window = tkinter.Tk()
         self.window.config(background=self.text_bg_color)
         self.window.title("PyChessBot")
-        self.window.iconbitmap("../data/favicon.ico")
+        self.window.iconbitmap(os.path.join(self.parent_dir, "data", "favicon.ico"))
         self.custom_font = font.Font(family="Segoe UI Semibold", size=10)
 
         # Make the window always on top
@@ -134,6 +140,8 @@ class GUI:
                                           command=self.load_board_pos, font=self.custom_font)
         self.load_button.pack(fill=tkinter.BOTH, expand=1)
 
+        self.check_ctrl()
+
     # Log a message in the outbox
     def log(self, message, level="normal"):
         self.outbox.configure(state='normal')
@@ -146,6 +154,14 @@ class GUI:
         self.outbox.insert(tkinter.END, message + "\n")  # Add the text to the textbox widget
         self.outbox.see(tkinter.END)
         self.outbox.configure(state='disabled')
+
+    def check_ctrl(self):
+        if ctypes.windll.user32.GetKeyState(VK_CONTROL) > 1:
+            if self.running:
+                self.log("Pausing...")
+                self.running = False
+                self.start_button.config(text="Start", background="green")
+        self.delay_task(10, self.check_ctrl)
 
     def cancel_task(self, task_id):
         self.window.after_cancel(task_id)

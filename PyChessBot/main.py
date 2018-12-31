@@ -5,7 +5,8 @@ from board.scanner import Scanner
 from board.analyzer import BoardAnalyzer
 import chess
 import sys
-import os
+from os import mkdir
+from os.path import dirname, join, abspath, isdir, isfile
 
 TASK_REPEAT_INTERVAL = 100
 
@@ -13,11 +14,13 @@ TASK_REPEAT_INTERVAL = 100
 class Main:
 
     def __init__(self):
-        if not os.path.isdir("../bin"):
-            os.mkdir("../bin")
-        if not os.path.isfile("../bin/engine.exe"):
+        self.parent_dir = abspath(join(dirname(__file__), ".."))
+        self.binary_dir = join(self.parent_dir, "bin")
+        if not isdir(self.binary_dir):
+            mkdir(self.binary_dir)
+        if not isfile(join(self.binary_dir, "engine.exe")):
             print("Error: Engine not found!")
-            print("Place engine.exe in " + os.path.join(os.path.dirname(os.path.abspath(".")), "bin"))
+            print("Place engine.exe in " + self.binary_dir)
             sys.exit()
 
         self.board: Chessboard = None
@@ -25,11 +28,11 @@ class Main:
         self.bot: Bot = None
 
         # Instantiate the GUI
-        self.interface = GUI(self.toggle_color, self.set_coordinates)
+        self.interface = GUI(self.parent_dir, self.toggle_color, self.set_coordinates)
         self.interface.create_window()
 
         # Instantiate the scanner
-        self.scanner = Scanner(self.interface)
+        self.scanner = Scanner(self.parent_dir, self.interface)
 
         # Retrieve the coordinates of the board from mouse input
         self.scanner.retrieve_coordinates(self.set_coordinates)
@@ -48,7 +51,7 @@ class Main:
         # Instantiate a chessboard object (wrapper for a python-chess board)
         self.board = Chessboard(width, height, top_left, self.interface.color)
         self.analyzer = BoardAnalyzer(self.board, self.interface)
-        self.bot = Bot(self.board, self.analyzer.square_centers)
+        self.bot = Bot(self.binary_dir, self.board, self.analyzer.square_centers)
 
         if self.board.color == chess.WHITE:
             self.bot.play_move()

@@ -1,12 +1,18 @@
 import time
 import pyautogui
 import ctypes
+import os
 from gui.gui import GUI
+
+# Source: https://docs.microsoft.com/en-us/windows/desktop/inputdev/virtual-key-codes
+VK_LBUTTON = 0x01
+VK_RBUTTON = 0x02
 
 
 class Scanner:
 
-    def __init__(self, interface):
+    def __init__(self, parent_dir, interface):
+        self.parent_dir = parent_dir
         self.interface: GUI = interface
         self.first_pos = None
         self.second_pos = None
@@ -22,9 +28,9 @@ class Scanner:
     @staticmethod
     def button_state(side):
         if side == "left":
-            return ctypes.windll.user32.GetKeyState(0x01) > 1
+            return ctypes.windll.user32.GetKeyState(VK_LBUTTON) > 1
         else:
-            return ctypes.windll.user32.GetKeyState(0x02) > 1
+            return ctypes.windll.user32.GetKeyState(VK_RBUTTON) > 1
 
     # Tell the user to setup two points, the top-left corner and bottom-right corner of the chess board
     def retrieve_coordinates(self, callback):
@@ -54,7 +60,7 @@ class Scanner:
                         width = self.second_pos[0] - self.first_pos[0]
                         height = self.second_pos[1] - self.first_pos[1]
 
-                        with open("../board_pos.dat", "w") as file:
+                        with open(os.path.join(self.parent_dir, "board_pos.dat"), "w") as file:
                             file.write(str(self.first_pos[0]) + "," + str(self.first_pos[1]) + "\n")
                             file.write(str(width) + "," + str(height))
 
