@@ -5,7 +5,7 @@ import os
 import numpy as np
 import ctypes
 
-DEBUG = False
+DEBUG = True
 VK_CONTROL = 0x11
 
 

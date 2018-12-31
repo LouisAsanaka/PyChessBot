@@ -93,17 +93,16 @@ class BoardAnalyzer:
                         self.is_animating = True
                         self.set_animating_state(self.current_state)
                         return None
-
                     square_name = chess.square_name(Chessboard.get_square(rank, file, self.board.color))
                     if square_name in ("a3", "c3", "h3", "f3"):  # It might be a pawn move
                         x, y = self.square_centers[rank - 1, file]
                         rgb = self.current_state.pixel(x - self.board_x, y - self.board_y)
-                        if rgb != self.light_square_color and rgb != self.dark_square_color:
-                            # Knight move
-                            move = "N" + square_name
-                        else:
+                        if rgb == self.light_square_color or rgb == self.dark_square_color:
                             # Pawn move
                             move = square_name  # Did this just to remind myself
+                        else:
+                            # Knight move
+                            move = "N" + square_name
                     elif square_name in Chessboard.LEGAL_FIRST_MOVES:
                         move = square_name  # Did this just to remind myself
                     else:
@@ -205,6 +204,8 @@ class BoardAnalyzer:
                 move = chess.Move.from_uci(move_uci)
                 if move in legal_moves:
                     return move
+            print(self.board.internal_board)
+            print(possible_moves)
             self.interface.log("Unknown error occurred.", level="error")
             raise RuntimeError("Unknown error occurred.")
         else:
