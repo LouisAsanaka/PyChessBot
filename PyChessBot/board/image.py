@@ -1,4 +1,5 @@
 from mss import mss
+from math import isclose
 
 
 class BoardImage:
@@ -14,3 +15,9 @@ class BoardImage:
 
     def snap(self):
         return self.sct.grab(self.region)
+
+    @staticmethod
+    def is_close(p1, p2):
+        return isclose(p1[0], p2[0], abs_tol=8) and \
+            isclose(p1[1], p2[1], abs_tol=8) and \
+            isclose(p1[2], p2[2], abs_tol=8)

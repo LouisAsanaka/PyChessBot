@@ -8,7 +8,7 @@ import sys
 from os import mkdir
 from os.path import dirname, join, abspath, isdir, isfile
 
-TASK_REPEAT_INTERVAL = 50
+TASK_REPEAT_INTERVAL = 30
 
 
 class Main:

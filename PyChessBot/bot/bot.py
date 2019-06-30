@@ -21,17 +21,19 @@ class Bot:
 
         move_from, move_to, promotion = engine_move.from_square, engine_move.to_square, engine_move.promotion
 
+        # Internal repr is mirrored from the official repr
+        # Hence the get_true_* methods which mirror first
+
         start_x, start_y = self.square_centers[
             Chessboard.get_true_rank(move_from, self.board.color), Chessboard.get_true_file(move_from, self.board.color)
         ]
         to_x, to_y = self.square_centers[
             Chessboard.get_true_rank(move_to, self.board.color), Chessboard.get_true_file(move_to, self.board.color)
         ]
-
         pyautogui.moveTo(start_x, start_y)
 
-        # drag_time = round(random.uniform(0.4, 1.2), 1)
-        drag_time = 0.4
+        #drag_time = round(random.uniform(0.4, 1.2), 1)
+        drag_time = 0.3
         pyautogui.dragTo(to_x, to_y, drag_time, button='left')
 
         if promotion is not None:
