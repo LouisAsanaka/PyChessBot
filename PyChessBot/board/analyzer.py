@@ -16,7 +16,6 @@ class BoardAnalyzer:
 
         self.square_corners = np.empty((8, 8), dtype=(int, 2))
         self.square_centers = np.empty((8, 8), dtype=(int, 2))
-        print(self.square_centers)
 
         # Units in pixels
         self.scan_region_size = 7
@@ -84,6 +83,7 @@ class BoardAnalyzer:
                         pass
                     else:
                         region_changes += 1
+                print("-> ", (rank, file), region_changes)
                 if region_changes >= self.region_threshold:
                     if self.is_animating:
                         if self.current_state.pixels == self.animating_state.pixels:
@@ -112,7 +112,7 @@ class BoardAnalyzer:
                     else:
                         self.interface.log("Move detected was not a legal move.", level="error")
                         raise RuntimeError("Error: Move detected was not a legal move.")
-
+                    self.interface.log(f"Opponent move: {move}")
                     uci_string = Chessboard.LEGAL_FIRST_MOVES_UCI[Chessboard.LEGAL_FIRST_MOVES.index(move)]
                     return chess.Move.from_uci(uci_string)
 
@@ -122,6 +122,9 @@ class BoardAnalyzer:
             if self.current_state.pixels == self.animating_state.pixels:
                 self.is_animating = False
                 self.set_animating_state(None)
+                # self.image.save(self.current_state, "current")
+                # self.image.save(self.previous_state, "previous")
+                # self.image.save(self.animating_state, "anim")
             else:
                 self.set_animating_state(self.current_state)
                 return None
@@ -143,10 +146,8 @@ class BoardAnalyzer:
                     old_pixel = self.current_state.pixel(x - self.board_x, y - self.board_y)
                     new_pixel = self.previous_state.pixel(x - self.board_x, y - self.board_y)
                     if not BoardImage.is_close(old_pixel, new_pixel):
-                        #print("Old: ", old_pixel)
-                        #print("New: ", new_pixel)
                         region_changes += 1
-                print((rank, file), region_changes)
+                # print((rank, file), region_changes)
                 if region_changes >= self.region_threshold:
                     #print((rank, file), region_changes)
                     changed_squares.append((rank, file))
@@ -159,7 +160,7 @@ class BoardAnalyzer:
         if changed_squares is None:
             return None
         changes = len(changed_squares)
-        print(changed_squares)
+        # print(changed_squares)
         print(self.board.internal_board)
 
         if changes == 4:  # Castling
@@ -189,7 +190,7 @@ class BoardAnalyzer:
         elif changes == 3:  # En passant
             squares = []
             for i in range(0, 3):
-                squares[i] = Chessboard.get_square(*changed_squares[i], self.board.color)
+                squares.append(Chessboard.get_square(*changed_squares[i], self.board.color))
             if chess.square_file(squares[0]) == chess.square_file(squares[1]):
                 attacking_pawn = 2
             elif chess.square_file(squares[1]) == chess.square_file(squares[2]):
@@ -217,9 +218,7 @@ class BoardAnalyzer:
             for move_uci in possible_moves:
                 move = chess.Move.from_uci(move_uci)
                 if move in legal_moves:
-                    print(move)
                     return move
-            print(possible_moves)
             self.interface.log("Unknown error occurred.", level="error")
             raise RuntimeError("Unknown error occurred.")
         else:

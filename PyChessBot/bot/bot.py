@@ -32,9 +32,9 @@ class Bot:
         ]
         pyautogui.moveTo(start_x, start_y)
 
-        #drag_time = round(random.uniform(0.4, 1.2), 1)
-        drag_time = 0.3
-        pyautogui.dragTo(to_x, to_y, drag_time, button='left')
+        drag_time = round(random.uniform(0.7, 1.2), 1)
+        # drag_time = 0.5
+        pyautogui.dragTo(to_x, to_y - self.board.square_height // 4, drag_time, button='left')
 
         if promotion is not None:
             self.attempt_promotion(promotion)

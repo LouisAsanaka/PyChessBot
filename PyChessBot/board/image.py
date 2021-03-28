@@ -1,4 +1,5 @@
 from mss import mss
+from PIL import Image
 from math import isclose
 
 
@@ -15,6 +16,11 @@ class BoardImage:
 
     def snap(self):
         return self.sct.grab(self.region)
+
+    @staticmethod
+    def save(screenshot, filename):
+        img = Image.frombytes("RGB", screenshot.size, screenshot.bgra, "raw", "BGRX")
+        img.save(f"{filename}.png")
 
     @staticmethod
     def is_close(p1, p2):

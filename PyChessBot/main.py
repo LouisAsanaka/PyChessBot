@@ -78,6 +78,7 @@ class Main:
         if move is None:
             self.interface.delay_task(TASK_REPEAT_INTERVAL, self.loop)
             return
+        self.interface.log(f"Opponent move: {move}")
         self.board.play_move(move)
 
         self.bot.play_move()

@@ -16,7 +16,7 @@ Installing
 
         pip install -r requirements.txt
 
-- Download a chess engine of your choice | [Stockfish 10](https://stockfishchess.org/files/stockfish-10-win.zip)
+- Download a chess engine of your choice | [Stockfish 13](https://stockfishchess.org/files/stockfish_13_win_x64_bmi2.zip)
 - Extract the zip, and create a folder called "bin" in the root program folder
 - Rename the engine executable to "engine.exe"
 - Place the renamed executable in the "bin" folder
