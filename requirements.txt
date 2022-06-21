@@ -1,5 +1,5 @@
 mss==6.1.0
-numpy==1.20.2
+numpy==1.22.0
 Pillow>=6.2.0
 PyAutoGUI==0.9.52
 PyMsgBox==1.0.9
